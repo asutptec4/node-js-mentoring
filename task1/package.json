@@ -1,0 +1,29 @@
+{
+  "name": "node-js-mentoring",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "task1_1": "nodemon --exec babel-node task1_1/index.js",
+    "task1_2": "nodemon --exec babel-node task1_2/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asutptec4/node-js-mentoring.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asutptec4/node-js-mentoring/issues"
+  },
+  "homepage": "https://github.com/asutptec4/node-js-mentoring#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/node": "^7.15.4",
+    "@babel/preset-env": "^7.15.6",
+    "csvtojson": "^2.0.10",
+    "eslint": "^7.32.0",
+    "nodemon": "^2.0.13"
+  }
+}
