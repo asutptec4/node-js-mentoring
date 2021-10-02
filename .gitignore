@@ -104,5 +104,4 @@ dist
 .tern-port
 
 # Output files
-**/output
 package-lock.json
