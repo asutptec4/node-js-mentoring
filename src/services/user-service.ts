@@ -39,6 +39,13 @@ export class UserService {
     return this.users;
   }
 
+  getAutoSuggestUsers(loginSubstring: string, limit: number): User[] {
+    return this.users
+      .filter((u) => u.login.includes(loginSubstring))
+      .sort((a, b) => a.login.localeCompare(b.login))
+      .slice(0, limit);
+  }
+
   update(user: Omit<User, 'isDeleted'>): User {
     const found = this.users.find((u) => u.id === user.id);
     if (found) {
@@ -47,6 +54,6 @@ export class UserService {
       found.age = user.age;
       return found;
     }
-    throw new UserNotFoundException(`User with ${user?.id} doesn't exist`);
+    throw new UserNotFoundException(`User with ${user.id} doesn't exist`);
   }
 }
