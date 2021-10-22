@@ -20,7 +20,7 @@ export class UserService {
 
   delete(id: string): User {
     const found = this.users.find((u) => u.id === id);
-    if (found) {
+    if (found && this.isNotDeleted(found)) {
       found.isDeleted = true;
       return found;
     }
@@ -29,14 +29,14 @@ export class UserService {
 
   findById(id: string): User {
     const found = this.users.find((u) => u.id === id);
-    if (found) {
+    if (found && this.isNotDeleted(found)) {
       return found;
     }
     throw new UserNotFoundException(`User with ${id} doesn't exist`);
   }
 
   getAll(): User[] {
-    return this.users;
+    return this.users.filter((u) => this.isNotDeleted(u));
   }
 
   getAutoSuggestUsers(loginSubstring: string, limit: number): User[] {
@@ -48,12 +48,16 @@ export class UserService {
 
   update(user: Omit<User, 'isDeleted'>): User {
     const found = this.users.find((u) => u.id === user.id);
-    if (found) {
+    if (found && this.isNotDeleted(found)) {
       found.login = user.login;
       found.password = user.password;
       found.age = user.age;
       return found;
     }
     throw new UserNotFoundException(`User with ${user.id} doesn't exist`);
+  }
+
+  private isNotDeleted(user: User): boolean {
+    return !user.isDeleted;
   }
 }
