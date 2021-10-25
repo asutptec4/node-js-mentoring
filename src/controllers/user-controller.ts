@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { UserNotFoundException } from '../services/user-not-found';
 import { UserService } from '../services/user-service';
@@ -14,7 +14,6 @@ export class UserController {
   }
 
   createUser(req: Request, res: Response): void {
-    this.validateRequest(req, res);
     const { login, password, age } = req.body;
     const user = this.userService.add({ login, password, age });
     res.json(user);
@@ -23,8 +22,8 @@ export class UserController {
   deleteUser(req: Request, res: Response): void {
     try {
       const { id } = req.params;
-      const user = this.userService.delete(id);
-      res.json(user);
+      this.userService.delete(id);
+      res.status(204).end();
     } catch (e: unknown) {
       this.handleUserServiceError(e, res);
     }
@@ -59,7 +58,6 @@ export class UserController {
   }
 
   updateUser(req: Request, res: Response): void {
-    this.validateRequest(req, res);
     try {
       const { id } = req.params;
       const { login, password, age } = req.body;
@@ -85,9 +83,11 @@ export class UserController {
     res.status(code).json({ error: message });
   }
 
-  private validateRequest(req: Request, res: Response): void {
-    const isNotValid = !this.userValidator.validate(req.body);
-    if (isNotValid) {
+  validateUser(req: Request, res: Response, next: NextFunction): void {
+    const isValid = this.userValidator.validate(req.body);
+    if (isValid) {
+      next();
+    } else {
       this.sendError(res, 400, this.userValidator.getValidationMessage());
     }
   }
