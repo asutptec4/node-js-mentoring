@@ -7,5 +7,5 @@ const port = process.env.PORT || 3000;
 app.use('/api/user', userRouter);
 
 app.listen(port, (): void => {
-  console.log(`Server Running on https://localhost:${port}`);
+  console.log(`Server Running on http://localhost:${port}`);
 });
