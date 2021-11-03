@@ -2,7 +2,13 @@
 Simple app to learn Node.js
 Before development can begin, dependencies must be installed:
 
-    npm install
+    npm installc
+
+App needs Postgres DB on localhost. To run it, the following comman may executed:
+
+    docker run --rm --name pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+
+Migration script can be found in `db` folder.
 
 App needs Postgres DB on localhost. To run it, the following comman may executed:
 
