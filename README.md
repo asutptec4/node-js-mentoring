@@ -2,7 +2,7 @@
 Simple app to learn Node.js
 Before development can begin, dependencies must be installed:
 
-    npm installc
+    npm install
 
 App needs Postgres DB on localhost. To run it, the following comman may executed:
 
