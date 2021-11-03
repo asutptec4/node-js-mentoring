@@ -1,8 +1,9 @@
 import express, { Application } from 'express';
 import userRouter from './routes/user-router';
+import config from './config';
 
 const app: Application = express();
-const port = process.env.PORT || 3000;
+const port = config.port;
 
 app.use('/api/user', userRouter);
 

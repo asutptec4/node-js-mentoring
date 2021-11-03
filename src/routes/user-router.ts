@@ -3,11 +3,13 @@ import express, { Router } from 'express';
 import { UserService } from '../services/user-service';
 import { UserController } from '../controllers/user-controller';
 import { UserValidator } from '../utils/user-validator';
+import orm from '../db/orm';
+import { UserModel } from '../models/user';
 
 const router: Router = Router();
 
 const userController: UserController = new UserController(
-  new UserService(),
+  new UserService(orm.getRepository(UserModel)),
   new UserValidator()
 );
 
