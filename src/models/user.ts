@@ -1,14 +1,14 @@
 import {
-  Model,
-  Table,
+  AutoIncrement,
   Column,
-  PrimaryKey,
-  Default,
-  Unique,
   DataType,
+  Default,
   Index,
   IsUUID,
-  AutoIncrement,
+  Model,
+  PrimaryKey,
+  Table,
+  Unique,
 } from 'sequelize-typescript';
 
 export class User {

@@ -9,8 +9,8 @@
     "format": "prettier --config .prettierrc  \"src/**/*.{ts,js}\" --write",
     "lint": "eslint -c .eslintrc.js src",
     "lint:fix": "eslint -c .eslintrc.js src --fix",
-    "migration:up": "MIGRATION_TYPE=up node ./db/migration",
-    "migration:down": "MIGRATION_TYPE=down node ./db/migration"
+    "migrate:up": "MIGRATION_TYPE=up node ./db/migration",
+    "migrate:down": "MIGRATION_TYPE=down node ./db/migration"
   },
   "repository": {
     "type": "git",
