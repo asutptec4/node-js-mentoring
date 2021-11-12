@@ -15,7 +15,7 @@ const userController: UserController = new UserController(
   new UserService(Orm.getRepository(UserModel)),
   new UserValidator()
 );
-app.use('/api/user', new UserRouter(userController).instance);
+app.use('/api/users', new UserRouter(userController).instance);
 
 const port = config.port;
 app.listen(port, (): void => {
