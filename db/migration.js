@@ -15,12 +15,18 @@ sequelize
   .then(() => {
     console.log('The database connection has been established successfully.');
     const fileName =
-      migrationType == 'up' ? './db/users.up.sql' : './db/users.down.sql';
+      migrationType == 'up'
+        ? './db/migration.up.sql'
+        : './db/migration.down.sql';
     const sql_string = fs.readFileSync(fileName, 'utf8');
     return sequelize.query(sql_string);
   })
   .then(() => {
-    console.log('The database was initialized.');
+    console.log(
+      migrationType == 'up'
+        ? 'The database was initialized.'
+        : 'The database was droped'
+    );
     process.exit(0);
   })
   .catch((err) => {
