@@ -39,7 +39,7 @@ export class UserController {
   async getAutoSuggestUsers(req: Request, res: Response): Promise<void> {
     const { limit, loginSubstring } = req.query;
     if (limit && loginSubstring) {
-      const users = await this.userService.getAutoSuggestUsers(
+      const users = await this.userService.getSuggestedUsers(
         loginSubstring.toString(),
         Number.parseInt(limit as string)
       );

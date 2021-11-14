@@ -23,7 +23,7 @@ export class UserService {
       if (err instanceof ValidationError && err.get('login')) {
         throw new UserServiceException(`User [${user.login}] already exist`);
       }
-      throw new UserServiceException('Unknown error');
+      throw err;
     }
   }
 
@@ -52,7 +52,7 @@ export class UserService {
     return users.map((u) => new User(u));
   }
 
-  async getAutoSuggestUsers(
+  async getSuggestedUsers(
     loginSubstring: string,
     limit: number
   ): Promise<User[]> {

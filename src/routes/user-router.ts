@@ -9,10 +9,7 @@ export class UserRouter {
     this.instance = Router();
     this.instance
       .get('/', userController.getAll.bind(userController))
-      .get(
-        '/auto-suggest',
-        userController.getAutoSuggestUsers.bind(userController)
-      )
+      .get('/suggest', userController.getAutoSuggestUsers.bind(userController))
       .get('/:id', userController.getUser.bind(userController))
       .put('/:id', [
         userController.validateUser.bind(userController),
