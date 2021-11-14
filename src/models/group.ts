@@ -1,5 +1,6 @@
 import {
   AutoIncrement,
+  BelongsToMany,
   Column,
   DataType,
   Index,
@@ -10,17 +11,21 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
+import { User, UserModel, UserGroupModel } from '.';
+
 export type Permission = 'READ' | 'WRITE' | 'DETETE' | 'SHARE' | 'UPLOAD_FILES';
 
 export class Group {
   public id: string;
   public name: string;
   public permissions: Permission[];
+  public users?: User[];
 
   constructor(groupModel: GroupModel) {
     this.id = groupModel.id;
     this.name = groupModel.name;
     this.permissions = groupModel.permissions as Permission[];
+    this.users = groupModel.users?.map((u) => new User(u));
   }
 }
 
@@ -42,5 +47,8 @@ export class GroupModel extends Model<Group, Omit<Group, 'id'>> {
   name!: string;
 
   @Column(DataType.ARRAY(DataType.STRING(255)))
-  permissions!: string[];
+  permissions!: Permission[];
+
+  @BelongsToMany(() => UserModel, () => UserGroupModel)
+  users!: UserModel[];
 }

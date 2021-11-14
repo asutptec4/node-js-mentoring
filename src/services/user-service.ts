@@ -1,14 +1,19 @@
 import { Repository } from 'sequelize-typescript';
 import { Op, ValidationError } from 'sequelize';
 
-import { User, UserModel } from '../models/user';
+import { GroupModel, User, UserModel } from '../models';
 import { UserServiceException } from './user-service-exception';
 
 export class UserService {
   private userRepository: Repository<UserModel>;
+  private groupRepository: Repository<GroupModel>;
 
-  constructor(userRepository: Repository<UserModel>) {
+  constructor(
+    userRepository: Repository<UserModel>,
+    groupRepository: Repository<GroupModel>
+  ) {
     this.userRepository = userRepository;
+    this.groupRepository = groupRepository;
   }
 
   async add(user: Omit<User, 'id' | 'isDeleted'>): Promise<User> {
@@ -38,7 +43,9 @@ export class UserService {
   }
 
   async findById(id: string): Promise<User> {
-    const found = await this.userRepository.findByPk(id);
+    const found = await this.userRepository.findByPk(id, {
+      include: [this.groupRepository],
+    });
     if (found) {
       return new User(found);
     }
@@ -48,6 +55,7 @@ export class UserService {
   async getAll(): Promise<User[]> {
     const users = await this.userRepository.findAll({
       where: { isDeleted: false },
+      include: [this.groupRepository],
     });
     return users.map((u) => new User(u));
   }

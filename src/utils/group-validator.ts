@@ -2,7 +2,7 @@ import Ajv, { DefinedError, JSONSchemaType, ValidateFunction } from 'ajv';
 
 import { Group } from '../models/group';
 
-type GroupJson = Omit<Group, 'id'>;
+type GroupJson = Omit<Group, 'id' | 'users'>;
 
 export class GroupValidator {
   private schema: JSONSchemaType<GroupJson> = {

@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 
-import { GroupModel, UserModel } from '../models';
+import { GroupModel, UserGroupModel, UserModel } from '../models';
 import config from '../config';
 
 const orm = new Sequelize(config.dbName, config.dbUser, config.dbPassword, {
@@ -17,6 +17,6 @@ orm
     console.error('Unable to connect to the database:', err);
   });
 
-orm.addModels([UserModel, GroupModel]);
+orm.addModels([GroupModel, UserModel, UserGroupModel]);
 
 export default orm;

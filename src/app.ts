@@ -11,14 +11,17 @@ import { GroupValidator, UserValidator } from './utils';
 const app: Application = express();
 app.use(express.json());
 
+const groupRepository = Orm.getRepository(GroupModel);
+const userRepository = Orm.getRepository(UserModel);
+
 const userController: UserController = new UserController(
-  new UserService(Orm.getRepository(UserModel)),
+  new UserService(userRepository, groupRepository),
   new UserValidator()
 );
 app.use('/api/users', new UserRouter(userController).instance);
 
 const groupController: GroupController = new GroupController(
-  new GroupService(Orm.getRepository(GroupModel)),
+  new GroupService(groupRepository, userRepository),
   new GroupValidator()
 );
 app.use('/api/groups', new GroupRouter(groupController).instance);

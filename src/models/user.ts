@@ -1,5 +1,6 @@
 import {
   AutoIncrement,
+  BelongsToMany,
   Column,
   DataType,
   Default,
@@ -11,17 +12,21 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
+import { Group, GroupModel, UserGroupModel } from '.';
+
 export class User {
   public id: string;
   public login: string;
   public password: string;
   public age: number;
+  public groups?: Group[];
 
   constructor(userModel: UserModel) {
     this.id = userModel.id;
     this.login = userModel.login;
     this.password = userModel.password;
     this.age = userModel.age;
+    this.groups = userModel.groups?.map((g) => new Group(g));
   }
 }
 
@@ -33,6 +38,7 @@ export class User {
 export class UserModel extends Model<
   User & {
     isDeleted: boolean;
+    group: GroupModel[];
   },
   Omit<User, 'id'>
 > {
@@ -56,4 +62,7 @@ export class UserModel extends Model<
   @Default(false)
   @Column(DataType.BOOLEAN)
   isDeleted!: boolean;
+
+  @BelongsToMany(() => GroupModel, () => UserGroupModel)
+  groups!: GroupModel[];
 }

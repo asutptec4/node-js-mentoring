@@ -1,16 +1,14 @@
 import { Repository } from 'sequelize-typescript';
 import { ValidationError } from 'sequelize';
 
-import { Group, GroupModel } from '../models/group';
+import { Group, GroupModel, UserModel } from '../models';
 import { GroupServiceException } from './group-service-exception';
 
-
 export class GroupService {
-  private groupRepository: Repository<GroupModel>;
-
-  constructor(groupRepository: Repository<GroupModel>) {
-    this.groupRepository = groupRepository;
-  }
+  constructor(
+    private groupRepository: Repository<GroupModel>,
+    private userRepository: Repository<UserModel>
+  ) {}
 
   async add(group: Omit<Group, 'id'>): Promise<Group> {
     try {
@@ -37,7 +35,9 @@ export class GroupService {
   }
 
   async findById(id: string): Promise<Group> {
-    const found = await this.groupRepository.findByPk(id);
+    const found = await this.groupRepository.findByPk(id, {
+      include: [this.userRepository],
+    });
     if (found) {
       return new Group(found);
     }
@@ -45,7 +45,9 @@ export class GroupService {
   }
 
   async getAll(): Promise<Group[]> {
-    const groups = await this.groupRepository.findAll();
+    const groups = await this.groupRepository.findAll({
+      include: [this.userRepository],
+    });
     return groups.map((g) => new Group(g));
   }
 
