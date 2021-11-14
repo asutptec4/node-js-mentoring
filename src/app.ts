@@ -1,12 +1,12 @@
 import express, { Application } from 'express';
 
 import config from './config';
-import { UserController } from './controllers/user-controller';
+import { GroupController, UserController } from './controllers';
 import Orm from './db/orm';
-import { UserModel } from './models/user';
-import { UserService } from './services/user-service';
-import { UserRouter } from './routes/user-router';
-import { UserValidator } from './utils/user-validator';
+import { GroupModel, UserModel } from './models';
+import { GroupRouter, UserRouter } from './routes';
+import { GroupService, UserService } from './services';
+import { GroupValidator, UserValidator } from './utils';
 
 const app: Application = express();
 app.use(express.json());
@@ -16,6 +16,12 @@ const userController: UserController = new UserController(
   new UserValidator()
 );
 app.use('/api/users', new UserRouter(userController).instance);
+
+const groupController: GroupController = new GroupController(
+  new GroupService(Orm.getRepository(GroupModel)),
+  new GroupValidator()
+);
+app.use('/api/groups', new GroupRouter(groupController).instance);
 
 const port = config.port;
 app.listen(port, (): void => {

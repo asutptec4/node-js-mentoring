@@ -44,10 +44,10 @@ export class UserModel extends Model<
 
   @Unique(true)
   @Index
-  @Column(DataType.STRING(254))
+  @Column(DataType.STRING(255))
   login!: string;
 
-  @Column(DataType.STRING(254))
+  @Column(DataType.STRING(255))
   password!: string;
 
   @Column(DataType.INTEGER)
