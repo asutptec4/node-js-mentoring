@@ -79,4 +79,19 @@ export class GroupController {
       this.sendError(res, 400, this.groupValidator.getValidationMessage());
     }
   }
+
+  async assignUsers(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { users } = req.body;
+      if (id && Array.isArray(users)) {
+        await this.groupService.addUsersToGroup(id, users);
+        res.status(200).end();
+      } else {
+        this.sendError(res, 400, 'Bad request params');
+      }
+    } catch (e: unknown) {
+      this.handleGroupServiceError(e, res);
+    }
+  }
 }

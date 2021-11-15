@@ -18,6 +18,9 @@ export class GroupRouter {
         groupController.validateGroup.bind(groupController),
         groupController.createGroup.bind(groupController),
       ])
+      .post('/:id/assignUsers', [
+        groupController.assignUsers.bind(groupController),
+      ])
       .delete('/:id', groupController.deleteGroup.bind(groupController));
   }
 }

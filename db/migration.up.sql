@@ -31,7 +31,9 @@ INSERT INTO groups(name, permissions) VALUES ('guest', ARRAY['READ']);
 
 CREATE TABLE users_groups (
     user_id UUID NOT NULL REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    group_id UUID NOT NULL REFERENCES groups (id) ON UPDATE CASCADE ON DELETE CASCADE
+    group_id UUID NOT NULL REFERENCES groups (id) ON UPDATE CASCADE ON DELETE CASCADE,
+
+    PRIMARY KEY (user_id, group_id)
 );
 
 INSERT INTO users_groups (user_id, group_id) VALUES ((SELECT id FROM users WHERE users.login = 'admin'), (SELECT id FROM groups WHERE groups.name = 'admin'));

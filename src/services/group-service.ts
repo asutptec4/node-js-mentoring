@@ -1,5 +1,5 @@
 import { Repository } from 'sequelize-typescript';
-import { ValidationError } from 'sequelize';
+import { Op, ValidationError } from 'sequelize';
 
 import { Group, GroupModel, UserModel } from '../models';
 import { GroupServiceException } from './group-service-exception';
@@ -59,6 +59,34 @@ export class GroupService {
       const updatedGroup = await found.save();
       return new Group(updatedGroup);
     }
-    throw new GroupServiceException(`User with ${group.id} doesn't exist`);
+    throw new GroupServiceException(`Group with ${group.id} doesn't exist`);
+  }
+
+  async addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
+    try {
+      const sequelize = this.userRepository.sequelize;
+      await sequelize?.transaction(async (t) => {
+        const group = await this.groupRepository.findByPk(groupId, {
+          transaction: t,
+          include: [this.userRepository],
+        });
+        const users = await this.userRepository.findAll({
+          where: {
+            isDeleted: false,
+            id: {
+              [Op.in]: userIds,
+            },
+          },
+          transaction: t,
+        });
+        if (group) {
+          await group.$add('users', users, { transaction: t });
+        } else {
+          throw new GroupServiceException(`Cannot assign users to ${groupId}`);
+        }
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 }
