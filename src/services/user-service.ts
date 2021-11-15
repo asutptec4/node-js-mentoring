@@ -1,63 +1,83 @@
-import { v4 as uuidv4 } from 'uuid';
+import { Repository } from 'sequelize-typescript';
+import { Op, ValidationError } from 'sequelize';
 
-import { User } from '../models/user';
-import { UserNotFoundException } from './user-not-found';
+import { User, UserModel } from '../models/user';
+import { UserServiceException } from './user-service-exception';
 
 export class UserService {
-  private users: User[] = [];
+  private userRepository: Repository<UserModel>;
 
-  add(user: Omit<User, 'id' | 'isDeleted'>): User {
-    const newUser: User = {
-      id: uuidv4(),
-      login: user.login,
-      password: user.password,
-      age: user.age,
-      isDeleted: false,
-    };
-    this.users.push(newUser);
-    return newUser;
+  constructor(userRepository: Repository<UserModel>) {
+    this.userRepository = userRepository;
   }
 
-  delete(id: string): User {
-    const found = this.users.find((u) => u.id === id);
-    if (found && this.isNotDeleted(found)) {
+  async add(user: Omit<User, 'id' | 'isDeleted'>): Promise<User> {
+    try {
+      const newUser = await this.userRepository.create({
+        login: user.login,
+        password: user.password,
+        age: user.age,
+      });
+      return new User(newUser);
+    } catch (err) {
+      if (err instanceof ValidationError && err.get('login')) {
+        throw new UserServiceException(`User [${user.login}] already exist`);
+      }
+      throw new UserServiceException('Unknown error');
+    }
+  }
+
+  async delete(id: string): Promise<User> {
+    const found = await this.userRepository.findByPk(id);
+    if (found) {
       found.isDeleted = true;
-      return found;
+      return found.save();
+    } else {
+      throw new UserServiceException(`User with ${id} doesn't exist`);
     }
-    throw new UserNotFoundException(`User with ${id} doesn't exist`);
   }
 
-  findById(id: string): User {
-    const found = this.users.find((u) => u.id === id);
-    if (found && this.isNotDeleted(found)) {
-      return found;
+  async findById(id: string): Promise<User> {
+    const found = await this.userRepository.findByPk(id);
+    if (found) {
+      return new User(found);
     }
-    throw new UserNotFoundException(`User with ${id} doesn't exist`);
+    throw new UserServiceException(`User with ${id} doesn't exist`);
   }
 
-  getAll(): User[] {
-    return this.users.filter((u) => this.isNotDeleted(u));
+  async getAll(): Promise<User[]> {
+    const users = await this.userRepository.findAll({
+      where: { isDeleted: false },
+    });
+    return users.map((u) => new User(u));
   }
 
-  getAutoSuggestUsers(loginSubstring: string, limit: number): User[] {
-    return this.users
-      .filter((u) => u.login.includes(loginSubstring))
-      .sort((a, b) => a.login.localeCompare(b.login))
-      .slice(0, limit);
+  async getAutoSuggestUsers(
+    loginSubstring: string,
+    limit: number
+  ): Promise<User[]> {
+    const users = await this.userRepository.findAll({
+      where: {
+        isDeleted: false,
+        login: {
+          [Op.like]: `%${loginSubstring}%`,
+        },
+      },
+      limit,
+      order: [['login', 'ASC']],
+    });
+    return users.map((u) => new User(u));
   }
 
-  update(user: Omit<User, 'isDeleted'>): User {
-    const found = this.users.find((u) => u.id === user.id);
-    if (found && this.isNotDeleted(found)) {
+  async update(user: Omit<User, 'isDeleted'>): Promise<User> {
+    const found = await this.userRepository.findByPk(user.id);
+    if (found) {
       found.login = user.login;
       found.password = user.password;
       found.age = user.age;
-      return found;
+      const updatedUser = await found.save();
+      return new User(updatedUser);
     }
-    throw new UserNotFoundException(`User with ${user.id} doesn't exist`);
-  }
-
-  private isNotDeleted(user: User): boolean {
-    return !user.isDeleted;
+    throw new UserServiceException(`User with ${user.id} doesn't exist`);
   }
 }

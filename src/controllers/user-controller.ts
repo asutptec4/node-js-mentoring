@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { UserNotFoundException } from '../services/user-not-found';
 import { UserService } from '../services/user-service';
 import { UserValidator } from '../utils/user-validator';
 
@@ -13,31 +12,34 @@ export class UserController {
     this.userValidator = validator;
   }
 
-  createUser(req: Request, res: Response): void {
-    const { login, password, age } = req.body;
-    const user = this.userService.add({ login, password, age });
-    res.json(user);
+  async createUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { login, password, age } = req.body;
+      const user = await this.userService.add({ login, password, age });
+      res.json(user);
+    } catch (err: unknown) {
+      this.sendError(res, 400, (err as Error).message);
+    }
   }
 
-  deleteUser(req: Request, res: Response): void {
+  async deleteUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      this.userService.delete(id);
+      await this.userService.delete(id);
       res.status(204).end();
     } catch (e: unknown) {
       this.handleUserServiceError(e, res);
     }
   }
 
-  getAll(req: Request, res: Response): void {
-    const users = this.userService.getAll();
-    res.json(users);
+  async getAll(req: Request, res: Response): Promise<void> {
+    res.json(await this.userService.getAll());
   }
 
-  getAutoSuggestUsers(req: Request, res: Response): void {
+  async getAutoSuggestUsers(req: Request, res: Response): Promise<void> {
     const { limit, loginSubstring } = req.query;
     if (limit && loginSubstring) {
-      const users = this.userService.getAutoSuggestUsers(
+      const users = await this.userService.getAutoSuggestUsers(
         loginSubstring.toString(),
         Number.parseInt(limit as string)
       );
@@ -47,21 +49,21 @@ export class UserController {
     }
   }
 
-  getUser(req: Request, res: Response): void {
+  async getUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const user = this.userService.findById(id);
+      const user = await this.userService.findById(id);
       res.json(user);
     } catch (e: unknown) {
       this.handleUserServiceError(e, res);
     }
   }
 
-  updateUser(req: Request, res: Response): void {
+  async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const { login, password, age } = req.body;
-      const user = this.userService.update({
+      const user = await this.userService.update({
         id,
         login,
         password,
@@ -74,7 +76,7 @@ export class UserController {
   }
 
   private handleUserServiceError(error: unknown, res: Response): void {
-    if (error instanceof UserNotFoundException) {
+    if (error instanceof Error) {
       this.sendError(res, 404, error.message);
     }
   }
