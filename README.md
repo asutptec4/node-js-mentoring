@@ -16,15 +16,25 @@ App needs Postgres DB on localhost. To run it, the following comman may executed
 
 Migration script can be found in `db` folder.
 To add seeds in db:
+
     cd db
     npm install
     npm run migrate:up
+
 To drop db:
+
     npm run migrate:down
 
 To run app using `docker-compose`:
+
     docker-compose build
     docker-compose up
+
+Request examples:
+
+    curl --location --request GET 'localhost:5000/api/users'
+    curl --location --request GET 'localhost:5000/api/groups'
+
 
 ## Available Scripts
 

@@ -3,13 +3,18 @@ const { Sequelize } = require('sequelize');
 
 const migrationType = process.env.MIGRATION_TYPE;
 
-const sequelize = new Sequelize(process.env.DATABASE_DB, process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
-  dialect: 'postgres',
-  host: process.env.DATABASE_HOST,
-  dialectOptions: {
-    multipleStatements: true,
-  },
-});
+const sequelize = new Sequelize(
+  process.env.DATABASE_DB || 'postgres',
+  process.env.DATABASE_USER || 'postgres',
+  process.env.DATABASE_PASSWORD || 'postgres',
+  {
+    dialect: 'postgres',
+    host: process.env.DATABASE_HOST || 'localhost',
+    dialectOptions: {
+      multipleStatements: true,
+    },
+  }
+);
 
 sequelize
   .authenticate()
@@ -30,5 +35,8 @@ sequelize
   })
   .catch((err) => {
     console.error(err);
+    if (err.name === "SequelizeDatabaseError") {
+      process.exit(0);
+    }
     process.exit(1);
   });
