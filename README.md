@@ -15,12 +15,16 @@ App needs Postgres DB on localhost. To run it, the following comman may executed
     docker run --rm --name pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
 
 Migration script can be found in `db` folder.
+To add seeds in db:
+    cd db
+    npm install
+    npm run migrate:up
+To drop db:
+    npm run migrate:down
 
-App needs Postgres DB on localhost. To run it, the following comman may executed:
-
-    docker run --rm --name pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
-
-Migration script can be found in `db` folder.
+To run app using `docker-compose`:
+    docker-compose build
+    docker-compose up
 
 ## Available Scripts
 
@@ -38,10 +42,10 @@ Launches the ESLint to find code's problems.\
 
 Launches the Prettier to format the code.\
 
-### `npm run migration:up`
+### `npm run migrate:up` in `db` folder
 
 Init the database tables with predefined collection.\
 
-### `npm run migration:down`
+### `npm run migrate:down` in `db` folder
 
 Drop the database tables.\

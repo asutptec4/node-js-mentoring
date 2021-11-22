@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  api:
+    container_name: user-api
+    build: .
+    ports:
+      - 5000:5000
+    networks:
+      - public
+    restart: on-failure
+    depends_on:
+      - db
+    environment:
+      DATABASE_DB: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: db
+  migration:
+    container_name: migration
+    build: db
+    networks:
+      - public
+    restart: on-failure
+    depends_on:
+      - db
+    environment:
+      DATABASE_DB: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: db
+  db:
+    container_name: pg.db
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - public
+networks:
+  public:

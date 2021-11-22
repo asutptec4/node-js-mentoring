@@ -1,0 +1,21 @@
+{
+  "name": "migration",
+  "version": "1.0.0",
+  "description": "Postgres db seeds",
+  "main": "migration.js",
+  "scripts": {
+    "migrate:up": "MIGRATION_TYPE=up node ./migration",
+    "migrate:down": "MIGRATION_TYPE=down node ./migration"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asutptec4/node-js-mentoring.git"
+  },
+  "author": "Aliaksandr Shyshonak",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.8.0"
+  }
+}

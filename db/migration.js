@@ -3,8 +3,9 @@ const { Sequelize } = require('sequelize');
 
 const migrationType = process.env.MIGRATION_TYPE;
 
-const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
+const sequelize = new Sequelize(process.env.DATABASE_DB, process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
   dialect: 'postgres',
+  host: process.env.DATABASE_HOST,
   dialectOptions: {
     multipleStatements: true,
   },
@@ -15,9 +16,7 @@ sequelize
   .then(() => {
     console.log('The database connection has been established successfully.');
     const fileName =
-      migrationType == 'up'
-        ? './db/migration.up.sql'
-        : './db/migration.down.sql';
+      migrationType == 'up' ? './migration.up.sql' : './migration.down.sql';
     const sql_string = fs.readFileSync(fileName, 'utf8');
     return sequelize.query(sql_string);
   })
