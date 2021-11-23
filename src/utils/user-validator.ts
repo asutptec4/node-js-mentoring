@@ -2,7 +2,7 @@ import Ajv, { DefinedError, JSONSchemaType, ValidateFunction } from 'ajv';
 
 import { User } from '../models/user';
 
-type UserJson = Omit<User, 'id' | 'isDeleted'>;
+type UserJson = Omit<User, 'id' | 'isDeleted' | 'groups'>;
 
 export class UserValidator {
   private userSchema: JSONSchemaType<UserJson> = {
