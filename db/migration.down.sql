@@ -1,7 +1,7 @@
-DROP TABLE users_groups;
+DROP TABLE IF EXISTS users_groups;
 
-DROP INDEX user_index_login;
-DROP TABLE users;
+DROP INDEX IF EXISTS user_index_login;
+DROP TABLE IF EXISTS users;
 
-DROP INDEX group_index_name;
-DROP TABLE groups;
+DROP INDEX IF EXISTS group_index_name;
+DROP TABLE IF EXISTS groups;

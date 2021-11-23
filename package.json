@@ -5,12 +5,11 @@
   "main": "app.js",
   "scripts": {
     "start": "npm run serve",
+    "build": "tsc",
     "serve": "tsc --watch & nodemon dist/app.js",
     "format": "prettier --config .prettierrc  \"src/**/*.{ts,js}\" --write",
     "lint": "eslint -c .eslintrc.js src",
-    "lint:fix": "eslint -c .eslintrc.js src --fix",
-    "migrate:up": "MIGRATION_TYPE=up node ./db/migration",
-    "migrate:down": "MIGRATION_TYPE=down node ./db/migration"
+    "lint:fix": "eslint -c .eslintrc.js src --fix"
   },
   "repository": {
     "type": "git",
