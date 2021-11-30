@@ -1,4 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import {
+  UserAlreadyExistException,
+  UserNotExistException,
+} from '../exceptions';
 
 import { UserService } from '../services/user-service';
 import { AsyncErrorHandler } from '../utils/controller-utils';
@@ -18,8 +22,8 @@ export class UserController {
       const { login, password, age } = req.body;
       const user = await this.userService.add({ login, password, age });
       res.json(user);
-    } catch (err: unknown) {
-      this.sendError(res, 400, (err as Error).message);
+    } catch (e: unknown) {
+      this.handleUserServiceError(e, res);
     }
   }
 
@@ -79,8 +83,12 @@ export class UserController {
   }
 
   private handleUserServiceError(error: unknown, res: Response): void {
-    if (error instanceof Error) {
+    if (error instanceof UserNotExistException) {
       this.sendError(res, 404, error.message);
+    } else if (error instanceof UserAlreadyExistException) {
+      this.sendError(res, 400, (error as Error).message);
+    } else {
+      throw error;
     }
   }
 

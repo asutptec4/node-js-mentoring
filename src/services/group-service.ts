@@ -2,7 +2,11 @@ import { Repository } from 'sequelize-typescript';
 import { Op, ValidationError } from 'sequelize';
 
 import { Group, GroupModel, UserModel } from '../models';
-import { GroupServiceException } from './group-service-exception';
+import {
+  AssignGroupException,
+  GroupAlreadyExistException,
+  GroupNotExistException,
+} from '../exceptions';
 
 export class GroupService {
   constructor(
@@ -19,7 +23,7 @@ export class GroupService {
       return new Group(newGroup);
     } catch (err) {
       if (err instanceof ValidationError && err.get('name')) {
-        throw new GroupServiceException(`Group [${group.name}] already exist`);
+        throw new GroupAlreadyExistException(group.name);
       }
       throw err;
     }
@@ -30,7 +34,7 @@ export class GroupService {
     if (found) {
       return found.destroy();
     } else {
-      throw new GroupServiceException(`Group with ${id} doesn't exist`);
+      throw new GroupNotExistException(id);
     }
   }
 
@@ -41,7 +45,7 @@ export class GroupService {
     if (found) {
       return new Group(found);
     }
-    throw new GroupServiceException(`Group with ${id} doesn't exist`);
+    throw new GroupNotExistException(id);
   }
 
   async getAll(): Promise<Group[]> {
@@ -59,34 +63,30 @@ export class GroupService {
       const updatedGroup = await found.save();
       return new Group(updatedGroup);
     }
-    throw new GroupServiceException(`Group with ${group.id} doesn't exist`);
+    throw new GroupNotExistException(group.id);
   }
 
   async addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
-    try {
-      const sequelize = this.userRepository.sequelize;
-      await sequelize?.transaction(async (t) => {
-        const group = await this.groupRepository.findByPk(groupId, {
-          transaction: t,
-          include: [this.userRepository],
-        });
-        const users = await this.userRepository.findAll({
-          where: {
-            isDeleted: false,
-            id: {
-              [Op.in]: userIds,
-            },
-          },
-          transaction: t,
-        });
-        if (group) {
-          await group.$add('users', users, { transaction: t });
-        } else {
-          throw new GroupServiceException(`Cannot assign users to ${groupId}`);
-        }
+    const sequelize = this.userRepository.sequelize;
+    await sequelize?.transaction(async (t) => {
+      const group = await this.groupRepository.findByPk(groupId, {
+        transaction: t,
+        include: [this.userRepository],
       });
-    } catch (err) {
-      throw err;
-    }
+      const users = await this.userRepository.findAll({
+        where: {
+          isDeleted: false,
+          id: {
+            [Op.in]: userIds,
+          },
+        },
+        transaction: t,
+      });
+      if (group) {
+        await group.$add('users', users, { transaction: t });
+      } else {
+        throw new AssignGroupException(groupId);
+      }
+    });
   }
 }

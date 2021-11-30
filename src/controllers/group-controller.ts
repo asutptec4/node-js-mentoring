@@ -1,4 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import {
+  GroupAlreadyExistException,
+  GroupNotExistException,
+} from '../exceptions';
 
 import { GroupService } from '../services/group-service';
 import { AsyncErrorHandler } from '../utils/controller-utils';
@@ -18,8 +22,8 @@ export class GroupController {
       const { name, permissions } = req.body;
       const user = await this.groupService.add({ name, permissions });
       res.json(user);
-    } catch (err: unknown) {
-      this.sendError(res, 400, (err as Error).message);
+    } catch (e: unknown) {
+      this.handleGroupServiceError(e, res);
     }
   }
 
@@ -64,8 +68,12 @@ export class GroupController {
   }
 
   private handleGroupServiceError(error: unknown, res: Response): void {
-    if (error instanceof Error) {
+    if (error instanceof GroupNotExistException) {
       this.sendError(res, 404, error.message);
+    } else if (error instanceof GroupAlreadyExistException) {
+      this.sendError(res, 400, (error as Error).message);
+    } else {
+      throw error;
     }
   }
 

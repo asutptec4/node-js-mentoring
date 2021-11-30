@@ -2,7 +2,10 @@ import { Repository } from 'sequelize-typescript';
 import { Op, ValidationError } from 'sequelize';
 
 import { GroupModel, User, UserModel } from '../models';
-import { UserServiceException } from './user-service-exception';
+import {
+  UserAlreadyExistException,
+  UserNotExistException,
+} from '../exceptions';
 
 export class UserService {
   private userRepository: Repository<UserModel>;
@@ -26,7 +29,7 @@ export class UserService {
       return new User(newUser);
     } catch (err) {
       if (err instanceof ValidationError && err.get('login')) {
-        throw new UserServiceException(`User [${user.login}] already exist`);
+        throw new UserAlreadyExistException(user.login);
       }
       throw err;
     }
@@ -38,7 +41,7 @@ export class UserService {
       found.isDeleted = true;
       return found.save();
     } else {
-      throw new UserServiceException(`User with ${id} doesn't exist`);
+      throw new UserNotExistException(id);
     }
   }
 
@@ -49,7 +52,7 @@ export class UserService {
     if (found) {
       return new User(found);
     }
-    throw new UserServiceException(`User with ${id} doesn't exist`);
+    throw new UserNotExistException(id);
   }
 
   async getAll(): Promise<User[]> {
@@ -86,6 +89,6 @@ export class UserService {
       const updatedUser = await found.save();
       return new User(updatedUser);
     }
-    throw new UserServiceException(`User with ${user.id} doesn't exist`);
+    throw new UserNotExistException(user.id);
   }
 }
