@@ -3,13 +3,15 @@ import express, { Application } from 'express';
 import config from './config';
 import { GroupController, UserController } from './controllers';
 import Orm from './db/orm';
+import {
+  createErrorHandlerMiddleware,
+  createLoggerMiddleware,
+} from './middlewares';
 import { GroupModel, UserModel } from './models';
+import { Logger } from './logger/logger';
 import { GroupRouter, UserRouter } from './routes';
 import { GroupService, UserService } from './services';
 import { GroupValidator, UserValidator } from './utils';
-import { Logger } from './logger/logger';
-import { createLoggerMiddleware } from './middlewares/logger';
-import { errorHandler } from './middlewares/error-handler';
 
 const app: Application = express();
 app.use(express.json());
@@ -30,7 +32,7 @@ const groupController: GroupController = new GroupController(
 );
 app.use('/api/groups', new GroupRouter(groupController).instance);
 
-app.use(errorHandler);
+app.use(createErrorHandlerMiddleware(Logger));
 const fatalErrorHandler = (error: Error) => {
   Logger.error({ error });
   process.exit(1);
