@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { UserService } from '../services/user-service';
+import { AsyncErrorHandler } from '../utils/controller-utils';
 import { UserValidator } from '../utils/user-validator';
 
 export class UserController {
@@ -32,10 +33,12 @@ export class UserController {
     }
   }
 
+  @AsyncErrorHandler()
   async getAll(req: Request, res: Response): Promise<void> {
     res.json(await this.userService.getAll());
   }
 
+  @AsyncErrorHandler()
   async getAutoSuggestUsers(req: Request, res: Response): Promise<void> {
     const { limit, loginSubstring } = req.query;
     if (limit && loginSubstring) {

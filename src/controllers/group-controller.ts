@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { GroupService } from '../services/group-service';
+import { AsyncErrorHandler } from '../utils/controller-utils';
 import { GroupValidator } from '../utils/group-validator';
 
 export class GroupController {
@@ -32,6 +33,7 @@ export class GroupController {
     }
   }
 
+  @AsyncErrorHandler()
   async getAll(req: Request, res: Response): Promise<void> {
     res.json(await this.groupService.getAll());
   }
