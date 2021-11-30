@@ -8,7 +8,8 @@ export const wrapErrorHandler =
       req: Request,
       res: Response,
       ...args: unknown[]
-    ) => Promise<void>
+    ) => Promise<void>,
+    controllerMethodName: string
   ) =>
   async (
     req: Request,
@@ -19,7 +20,15 @@ export const wrapErrorHandler =
     try {
       await controllerMethod(req, res, args);
     } catch (e: unknown) {
-      Logger.error({ request: req, response: res, error: e });
+      Logger.error({
+        methodName: controllerMethodName,
+        request: {
+          params: JSON.stringify(req.params),
+          query: JSON.stringify(req.query),
+          body: JSON.stringify(req.body),
+        },
+        error: e,
+      });
       next(e);
     }
   };
@@ -37,7 +46,7 @@ export function AsyncDefaultErrorHandler() {
       next: NextFunction,
       ...args: unknown[]
     ) {
-      return wrapErrorHandler(original.bind(this)).apply(this, [
+      return wrapErrorHandler(original.bind(this), propertyKey).apply(this, [
         req,
         res,
         next,
