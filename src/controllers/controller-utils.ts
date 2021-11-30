@@ -24,7 +24,7 @@ export const wrapErrorHandler =
     }
   };
 
-export function AsyncErrorHandler() {
+export function AsyncDefaultErrorHandler() {
   return function (
     target: unknown,
     propertyKey: string,

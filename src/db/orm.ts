@@ -8,7 +8,7 @@ const orm = new Sequelize(config.dbName, config.dbUser, config.dbPassword, {
   dialect: 'postgres',
   repositoryMode: true,
   host: config.dbHost,
-  logging: false
+  logging: false,
 });
 
 orm

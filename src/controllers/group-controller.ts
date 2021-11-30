@@ -5,7 +5,7 @@ import {
 } from '../exceptions';
 
 import { GroupService } from '../services/group-service';
-import { AsyncErrorHandler } from '../utils/controller-utils';
+import { AsyncDefaultErrorHandler } from './controller-utils';
 import { GroupValidator } from '../utils/group-validator';
 
 export class GroupController {
@@ -17,6 +17,7 @@ export class GroupController {
     this.groupValidator = validator;
   }
 
+  @AsyncDefaultErrorHandler()
   async createGroup(req: Request, res: Response): Promise<void> {
     try {
       const { name, permissions } = req.body;
@@ -27,6 +28,7 @@ export class GroupController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async deleteGroup(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -37,11 +39,12 @@ export class GroupController {
     }
   }
 
-  @AsyncErrorHandler()
+  @AsyncDefaultErrorHandler()
   async getAll(req: Request, res: Response): Promise<void> {
     res.json(await this.groupService.getAll());
   }
 
+  @AsyncDefaultErrorHandler()
   async getGroup(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -52,6 +55,7 @@ export class GroupController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async updateGroup(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -90,6 +94,7 @@ export class GroupController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async assignUsers(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
