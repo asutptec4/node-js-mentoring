@@ -12,7 +12,7 @@ export const createLoggerMiddleware =
     const body = JSON.stringify(req.body);
     res.on('finish', () => {
       const statusCode = res.statusCode;
-      const statusMessage = res.statusMessage
+      const statusMessage = res.statusMessage;
       logger.info({
         method,
         url,

@@ -9,6 +9,7 @@ import { GroupService, UserService } from './services';
 import { GroupValidator, UserValidator } from './utils';
 import { Logger } from './logger/logger';
 import { createLoggerMiddleware } from './middlewares/logger';
+import { errorHandler } from './middlewares/error-handler';
 
 const app: Application = express();
 app.use(express.json());
@@ -28,6 +29,14 @@ const groupController: GroupController = new GroupController(
   new GroupValidator()
 );
 app.use('/api/groups', new GroupRouter(groupController).instance);
+
+app.use(errorHandler);
+const fatalErrorHandler = (error: Error) => {
+  Logger.error({ error });
+  process.exit(1);
+};
+process.on('uncaughtException', fatalErrorHandler);
+process.on('unhandledRejection', fatalErrorHandler);
 
 const port = config.port;
 app.listen(port, (): void => {
