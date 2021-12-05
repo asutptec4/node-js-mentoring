@@ -1,4 +1,7 @@
 import winston from 'winston';
+import 'winston-mongodb';
+
+import config from '../config';
 
 export type LoggerInterface = winston.Logger;
 
@@ -14,11 +17,19 @@ export const Logger = winston.createLogger({
       filename: './log/error.log',
       level: 'error',
     }),
-    new winston.transports.File({ filename: './log/combined.log' }),
   ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
+  Logger.add(
+    new winston.transports.MongoDB({
+      level: 'info',
+      db: `mongodb://${config.mongoDbUser}:${config.mongoDbPassword}@${config.mongoDbHost}:27017/logs?authSource=admin`,
+      collection: 'server_logs',
+      tryReconnect: true,
+    })
+  );
+} else {
   Logger.add(
     new winston.transports.Console({
       format: winston.format.combine(
