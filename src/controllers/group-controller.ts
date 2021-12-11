@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
+import {
+  GroupAlreadyExistException,
+  GroupNotExistException,
+} from '../exceptions';
 
 import { GroupService } from '../services/group-service';
+import { AsyncDefaultErrorHandler } from './controller-utils';
 import { GroupValidator } from '../utils/group-validator';
 
 export class GroupController {
@@ -12,16 +17,18 @@ export class GroupController {
     this.groupValidator = validator;
   }
 
+  @AsyncDefaultErrorHandler()
   async createGroup(req: Request, res: Response): Promise<void> {
     try {
       const { name, permissions } = req.body;
       const user = await this.groupService.add({ name, permissions });
       res.json(user);
-    } catch (err: unknown) {
-      this.sendError(res, 400, (err as Error).message);
+    } catch (e: unknown) {
+      this.handleGroupServiceError(e, res);
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async deleteGroup(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -32,10 +39,12 @@ export class GroupController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async getAll(req: Request, res: Response): Promise<void> {
     res.json(await this.groupService.getAll());
   }
 
+  @AsyncDefaultErrorHandler()
   async getGroup(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -46,6 +55,7 @@ export class GroupController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async updateGroup(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -62,8 +72,12 @@ export class GroupController {
   }
 
   private handleGroupServiceError(error: unknown, res: Response): void {
-    if (error instanceof Error) {
+    if (error instanceof GroupNotExistException) {
       this.sendError(res, 404, error.message);
+    } else if (error instanceof GroupAlreadyExistException) {
+      this.sendError(res, 400, (error as Error).message);
+    } else {
+      throw error;
     }
   }
 
@@ -80,6 +94,7 @@ export class GroupController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async assignUsers(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;

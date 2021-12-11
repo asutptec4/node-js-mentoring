@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
+import {
+  UserAlreadyExistException,
+  UserNotExistException,
+} from '../exceptions';
 
 import { UserService } from '../services/user-service';
+import { AsyncDefaultErrorHandler } from './controller-utils';
 import { UserValidator } from '../utils/user-validator';
 
 export class UserController {
@@ -12,16 +17,18 @@ export class UserController {
     this.userValidator = validator;
   }
 
+  @AsyncDefaultErrorHandler()
   async createUser(req: Request, res: Response): Promise<void> {
     try {
       const { login, password, age } = req.body;
       const user = await this.userService.add({ login, password, age });
       res.json(user);
-    } catch (err: unknown) {
-      this.sendError(res, 400, (err as Error).message);
+    } catch (e: unknown) {
+      this.handleUserServiceError(e, res);
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async deleteUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -32,10 +39,12 @@ export class UserController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async getAll(req: Request, res: Response): Promise<void> {
     res.json(await this.userService.getAll());
   }
 
+  @AsyncDefaultErrorHandler()
   async getAutoSuggestUsers(req: Request, res: Response): Promise<void> {
     const { limit, loginSubstring } = req.query;
     if (limit && loginSubstring) {
@@ -49,6 +58,7 @@ export class UserController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async getUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -59,6 +69,7 @@ export class UserController {
     }
   }
 
+  @AsyncDefaultErrorHandler()
   async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -76,8 +87,12 @@ export class UserController {
   }
 
   private handleUserServiceError(error: unknown, res: Response): void {
-    if (error instanceof Error) {
+    if (error instanceof UserNotExistException) {
       this.sendError(res, 404, error.message);
+    } else if (error instanceof UserAlreadyExistException) {
+      this.sendError(res, 400, (error as Error).message);
+    } else {
+      throw error;
     }
   }
 
