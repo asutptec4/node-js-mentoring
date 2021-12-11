@@ -5,6 +5,7 @@ import { GroupModel, User, UserModel } from '../models';
 import {
   UserAlreadyExistException,
   UserNotExistException,
+  UserNotFoundException,
 } from '../exceptions';
 
 export class UserService {
@@ -53,6 +54,16 @@ export class UserService {
       return new User(found);
     }
     throw new UserNotExistException(id);
+  }
+
+  async findByLogin(login: string): Promise<User> {
+    const found = await this.userRepository.findOne({
+      where: { login },
+    });
+    if (found) {
+      return new User(found);
+    }
+    throw new UserNotFoundException(login);
   }
 
   async getAll(): Promise<User[]> {

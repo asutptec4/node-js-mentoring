@@ -18,3 +18,10 @@ export class UserNotExistException extends UserServiceException {
     this.name = this.constructor.name;
   }
 }
+
+export class UserNotFoundException extends UserServiceException {
+  constructor(message) {
+    super(`User with login=[${message}] doesn't exist`);
+    this.name = this.constructor.name;
+  }
+}
