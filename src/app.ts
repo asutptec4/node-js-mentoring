@@ -1,4 +1,6 @@
+import cors from 'cors';
 import express, { Application } from 'express';
+import helmet from 'helmet';
 
 import config from './config';
 import { AuthController, GroupController, UserController } from './controllers';
@@ -17,6 +19,8 @@ import { GroupValidator, UserValidator } from './utils';
 const app: Application = express();
 app.use(express.json());
 app.use(createLoggerMiddleware(Logger));
+app.use(helmet());
+app.use(cors());
 
 const authService = new AuthService();
 
