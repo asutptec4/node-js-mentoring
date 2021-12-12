@@ -4,6 +4,7 @@ import config from './config';
 import { AuthController, GroupController, UserController } from './controllers';
 import Orm from './db/orm';
 import {
+  createAuthMiddleware,
   createErrorHandlerMiddleware,
   createLoggerMiddleware,
 } from './middlewares';
@@ -21,8 +22,16 @@ const authService = new AuthService();
 
 const groupRepository = Orm.getRepository(GroupModel);
 const userRepository = Orm.getRepository(UserModel);
-
 const userService = new UserService(userRepository, groupRepository);
+const authController: AuthController = new AuthController(
+  userService,
+  authService
+);
+
+app.use('/api/login', new AuthRouter(authController).instance);
+// Auth middleware is applied for routes below
+app.use(createAuthMiddleware(authService));
+
 const userController: UserController = new UserController(
   userService,
   new UserValidator()
@@ -34,12 +43,6 @@ const groupController: GroupController = new GroupController(
   new GroupValidator()
 );
 app.use('/api/groups', new GroupRouter(groupController).instance);
-
-const authController: AuthController = new AuthController(
-  userService,
-  authService
-);
-app.use('/api/login', new AuthRouter(authController).instance);
 
 app.use(createErrorHandlerMiddleware(Logger));
 const fatalErrorHandler = (error: Error) => {

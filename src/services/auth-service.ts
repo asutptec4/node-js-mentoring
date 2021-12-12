@@ -9,7 +9,12 @@ export class AuthService {
     });
   }
 
-  verify(token: string | undefined): void {
-    // TODO: add verify
+  verify(token: string): boolean {
+    try {
+      jwt.verify(token, config.jwtSecret);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
