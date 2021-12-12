@@ -23,6 +23,8 @@ services:
       MONGO_HOST: mongo
       MONGO_DATABASE_USER: mongo
       MONGO_DATABASE_DB: mongo
+      JWT_SECRET: some-secret
+      JWT_EXP_TIME: 1m
 
   migration:
     container_name: migration
