@@ -1,8 +1,10 @@
 import { Sequelize } from 'sequelize-typescript';
 
 import { GroupModel, UserGroupModel, UserModel } from '../models';
-import config from '../config';
+import getConfig from '../config';
 import { Logger } from '../logger/logger';
+
+const config = getConfig();
 
 const orm = new Sequelize(config.dbName, config.dbUser, config.dbPassword, {
   dialect: 'postgres',

@@ -1,7 +1,9 @@
 import winston from 'winston';
 import 'winston-mongodb';
 
-import config from '../config';
+import getConfig from '../config';
+
+const config = getConfig();
 
 export type LoggerInterface = winston.Logger;
 

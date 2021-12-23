@@ -65,3 +65,16 @@ Init the database tables with predefined collection.\
 ### `npm run migrate:down` in `db` folder
 
 Drop the database tables.\
+
+## `.env` file example
+
+    PORT=6000
+    DATABASE_DB='postgres'
+    DATABASE_USER='postgres'
+    DATABASE_PASSWORD='postgres'
+    DATABASE_HOST='localhost'
+    MONGO_HOST='localhost'
+    MONGO_DATABASE_USER='mongo'
+    MONGO_DATABASE_DB='mongo'
+    JWT_SECRET='superSecret'
+    JWT_EXP_TIME='2m'
