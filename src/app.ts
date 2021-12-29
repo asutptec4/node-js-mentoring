@@ -1,27 +1,43 @@
+import cors from 'cors';
 import express, { Application } from 'express';
+import helmet from 'helmet';
 
 import config from './config';
-import { GroupController, UserController } from './controllers';
+import { AuthController, GroupController, UserController } from './controllers';
 import Orm from './db/orm';
 import {
+  createAuthMiddleware,
   createErrorHandlerMiddleware,
   createLoggerMiddleware,
 } from './middlewares';
 import { GroupModel, UserModel } from './models';
 import { Logger } from './logger/logger';
-import { GroupRouter, UserRouter } from './routes';
-import { GroupService, UserService } from './services';
+import { AuthRouter, GroupRouter, UserRouter } from './routes';
+import { AuthService, GroupService, UserService } from './services';
 import { GroupValidator, UserValidator } from './utils';
 
 const app: Application = express();
 app.use(express.json());
 app.use(createLoggerMiddleware(Logger));
+app.use(helmet());
+app.use(cors());
+
+const authService = new AuthService();
 
 const groupRepository = Orm.getRepository(GroupModel);
 const userRepository = Orm.getRepository(UserModel);
+const userService = new UserService(userRepository, groupRepository);
+const authController: AuthController = new AuthController(
+  userService,
+  authService
+);
+
+app.use('/api/login', new AuthRouter(authController).instance);
+// Auth middleware is applied for routes below
+app.use(createAuthMiddleware(authService));
 
 const userController: UserController = new UserController(
-  new UserService(userRepository, groupRepository),
+  userService,
   new UserValidator()
 );
 app.use('/api/users', new UserRouter(userController).instance);

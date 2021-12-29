@@ -32,6 +32,12 @@ To run app using `docker-compose`:
 
 Request examples:
 
+    curl --location --request POST 'localhost:5000/api/login' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "login":"admin",
+        "password":"password"
+    }'
     curl --location --request GET 'localhost:5000/api/users'
     curl --location --request GET 'localhost:5000/api/groups'
 
