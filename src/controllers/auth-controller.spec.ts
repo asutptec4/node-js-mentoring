@@ -7,15 +7,12 @@ import { User } from '../models';
 import { AuthService } from '../services/auth-service';
 import { UserService } from '../services/user-service';
 
-jest.mock('../services/auth-service');
-jest.mock('../services/user-service');
-
 describe('AuthController tests:', () => {
   const UserServiceMock = mock<UserService>();
   const AuthServiceMock = mock<AuthService>();
   const res = mock<Response>();
-
   let authController: AuthController;
+
   beforeEach(() => {
     res.status.mockReturnThis();
     authController = new AuthController(UserServiceMock, AuthServiceMock);

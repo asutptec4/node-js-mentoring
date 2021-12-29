@@ -13,8 +13,8 @@ import { GroupValidator } from '../utils';
 describe('GroupController tests:', () => {
   const GroupServiceMock = mock<GroupService>();
   const res = mock<Response>();
-
   let groupController: GroupController;
+
   beforeEach(() => {
     res.status.mockReturnThis();
     groupController = new GroupController(

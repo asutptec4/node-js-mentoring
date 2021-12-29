@@ -13,8 +13,8 @@ import { UserValidator } from '../utils';
 describe('UserController tests:', () => {
   const UserServiceMock = mock<UserService>();
   const res = mock<Response>();
-
   let userController: UserController;
+
   beforeEach(() => {
     res.status.mockReturnThis();
     userController = new UserController(UserServiceMock, new UserValidator());
