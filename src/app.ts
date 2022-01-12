@@ -1,4 +1,5 @@
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import helmet from 'helmet';
 
@@ -15,6 +16,8 @@ import { Logger } from './logger/logger';
 import { AuthRouter, GroupRouter, UserRouter } from './routes';
 import { AuthService, GroupService, UserService } from './services';
 import { GroupValidator, UserValidator } from './utils';
+
+dotenv.config();
 
 const app: Application = express();
 app.use(express.json());
@@ -56,7 +59,7 @@ const fatalErrorHandler = (error: Error) => {
 process.on('uncaughtException', fatalErrorHandler);
 process.on('unhandledRejection', fatalErrorHandler);
 
-const port = config.port;
+const port = config().port;
 app.listen(port, (): void => {
   Logger.info(`Server Running on http://localhost:${port}`);
 });

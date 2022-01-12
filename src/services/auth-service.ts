@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 
-import config from '../config';
+import getConfig from '../config';
+
+const config = getConfig();
 
 export class AuthService {
   getToken(payload: unknown): string {

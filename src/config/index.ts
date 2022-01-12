@@ -1,4 +1,4 @@
-export default {
+export default () => ({
   port: process.env.PORT || 5000,
   dbName: process.env.DATABASE_DB || 'postgres',
   dbUser: process.env.DATABASE_USER || 'postgres',
@@ -9,4 +9,4 @@ export default {
   mongoDbPassword: process.env.MONGO_DATABASE_DB || 'mongo',
   jwtSecret: process.env.JWT_SECRET || 'superSecret',
   jwtExpTime: process.env.JWT_EXP_TIME || '2m',
-};
+});
